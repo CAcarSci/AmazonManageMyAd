@@ -5,11 +5,15 @@ from .utils import get_conn
 from . import rag
 
 app = FastAPI(title="AmazonManageMyAd — Local API")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
+)
+
 
 @app.get("/health")
 def health():
     return {"ok": True}
+
 
 @app.post("/rag", response_model=RAGResponse)
 def rag_endpoint(req: RAGRequest):
@@ -18,8 +22,12 @@ def rag_endpoint(req: RAGRequest):
     # store
     with get_conn() as conn:
         with conn.cursor() as cur:
-            cur.execute("insert into recommendations(category_id, payload) values (%s,%s)", (req.category_id, {"summary": summary, "items": items}))
+            cur.execute(
+                "insert into recommendations(category_id, payload) values (%s,%s)",
+                (req.category_id, {"summary": summary, "items": items}),
+            )
             return {"summary": summary, "items": items}
+
 
 @app.post("/bids/preview")
 def preview_bid_changes(changes: list[BidChange]):

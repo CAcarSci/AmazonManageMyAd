@@ -1,7 +1,7 @@
 import os
 import psycopg
 
-DB = os.environ["DATABASE_URL"].replace("+psycopg","")
+DB = os.environ["DATABASE_URL"].replace("+psycopg", "")
 
 SQL = """
 with z as (

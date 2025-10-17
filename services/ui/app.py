@@ -1,11 +1,15 @@
-import os, pandas as pd, psycopg, requests, json
+import os
+import pandas as pd
+import psycopg
+import requests
 import streamlit as st
 
-DB = os.environ["DATABASE_URL"].replace("+psycopg","")
-API = os.getenv("API_BASE","http://api:8000")
+DB = os.environ["DATABASE_URL"].replace("+psycopg", "")
+API = os.getenv("API_BASE", "http://api:8000")
 
 st.set_page_config(page_title="Amazon Ads — Local Control Room", layout="wide")
 st.title("Amazon Ads — Local Control Room")
+
 
 @st.cache_data(ttl=120)
 def kpis():
@@ -22,8 +26,9 @@ def kpis():
         """
         return pd.read_sql(q, conn)
 
+
 m = kpis().iloc[0]
-col1,col2,col3,col4 = st.columns(4)
+col1, col2, col3, col4 = st.columns(4)
 col1.metric("Clicks (30d)", int(m.clicks or 0))
 col2.metric("Cost (30d)", f"€{(m.cost or 0):.2f}")
 col3.metric("Sales (30d)", f"€{(m.sales or 0):.2f}")
@@ -44,18 +49,25 @@ with psycopg.connect(DB) as conn:
             case when sales>0 then cost/sales end as acos
         from agg
         order by sales desc nulls last
-        """, conn)
+        """,
+        conn,
+    )
 st.dataframe(df, use_container_width=True)
 
 st.divider()
 st.subheader("RAG: Category → Best-Seller Keywords")
 category_id = st.text_input("Category ID (your naming)", value="socks-bamboo")
-question = st.text_area("Question", value="List high-impact keywords and actions for next week.")
+question = st.text_area(
+    "Question", value="List high-impact keywords and actions for next week."
+)
 if st.button("Generate Recommendations"):
-    r = requests.post(f"{API}/rag", json={"category_id": category_id, "question": question, "top_k": 12})
+    r = requests.post(
+        f"{API}/rag",
+        json={"category_id": category_id, "question": question, "top_k": 12},
+    )
     if r.ok:
         out = r.json()
         st.markdown(f"**Summary:** {out['summary']}")
-        st.json(out.get('items', []))
+        st.json(out.get("items", []))
     else:
         st.error(r.text)
