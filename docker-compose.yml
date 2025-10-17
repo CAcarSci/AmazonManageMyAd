@@ -1,0 +1,63 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ads
+      POSTGRES_PASSWORD: ads
+      POSTGRES_DB: amazon_ads
+    ports: ["5432:5432"]
+    volumes:
+      - ./data/pg:/var/lib/postgresql/data
+      - ./sql:/sql:ro
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U ads -d amazon_ads"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports: ["5050:80"]
+    depends_on: [db]
+
+  ollama:
+    image: ollama/ollama:latest
+    ports: ["11434:11434"]
+    volumes:
+      - ollama:/root/.ollama
+
+  api:
+    build: ./services/api
+    env_file: .env
+    volumes:
+      - ./services/api:/app
+    ports: ["8000:8000"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  worker:
+    build: ./services/worker
+    env_file: .env
+    volumes:
+      - ./services/worker:/app
+    depends_on:
+      - api
+      - db
+      - ollama
+
+  ui:
+    build: ./services/ui
+    env_file: .env
+    volumes:
+      - ./services/ui:/app
+    ports: ["8501:8501"]
+    depends_on:
+      - api
+      - db
+
+volumes:
+  ollama:

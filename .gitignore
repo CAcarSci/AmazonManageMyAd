@@ -1,0 +1,80 @@
+# -------------------------------
+# Python
+# -------------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.sqlite3
+*.egg-info/
+.env
+.env.*
+.venv/
+venv/
+env/
+
+# -------------------------------
+# VS Code / IDE
+# -------------------------------
+.vscode/
+.idea/
+*.code-workspace
+
+# -------------------------------
+# OS files
+# -------------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------------
+# Docker / Compose
+# -------------------------------
+data/pg/
+*.pid
+*.sock
+tmp/
+*.db
+*.tar
+docker-compose.override.yml
+
+# -------------------------------
+# Ollama / Models
+# -------------------------------
+ollama/
+ollama-cache/
+ollama-models/
+models/
+model_cache/
+.cache/
+
+# -------------------------------
+# Build / Distribution
+# -------------------------------
+dist/
+build/
+*.egg
+.eggs/
+
+# -------------------------------
+# Misc / Output
+# -------------------------------
+*.csv
+*.xlsx
+*.json
+*.zip
+*.bak
+*.old
+*.tmp
+*.swp
+*.swo
+
+# -------------------------------
+# Local reports & notebooks
+# -------------------------------
+notebooks/.ipynb_checkpoints
+*.ipynb
+reports/
+logs/
+output/
+results/
